@@ -11,6 +11,8 @@ public:
 	Device();
 	~Device();
 
+	void Run();
+
 private:
 	std::unique_ptr<SFMLWindow> _window;
 };

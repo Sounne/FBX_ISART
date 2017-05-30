@@ -9,6 +9,9 @@ public:
 	SFMLWindow();
 	~SFMLWindow();
 
+	void Update();
+	void Exit();
+
 private:
 	sf::Window _window;
 	sf::Vector2u _size;

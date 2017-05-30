@@ -6,6 +6,11 @@ int main(int* ac, char** av)
 {
 	Device* device = new Device();
 
+	while (1)
+	{
+		device->Run();
+	}
+
 	delete device;
 
 	return EXIT_SUCCESS;

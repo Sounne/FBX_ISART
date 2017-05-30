@@ -8,3 +8,8 @@ Device::Device()
 Device::~Device()
 {
 }
+
+void Device::Run()
+{
+	_window.get()->Update();
+}

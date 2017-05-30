@@ -9,3 +9,13 @@ SFMLWindow::SFMLWindow()
 SFMLWindow::~SFMLWindow()
 {
 }
+
+void SFMLWindow::Update()
+{
+	_window.display();
+}
+
+void SFMLWindow::Exit()
+{
+	_window.close();
+}
