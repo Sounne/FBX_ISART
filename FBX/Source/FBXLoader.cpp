@@ -8,6 +8,10 @@ FBXLoader::~FBXLoader()
 {
 }
 
+void FBXLoader::Init()
+{
+}
+
 void FBXLoader::Draw()
 {
 }

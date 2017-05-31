@@ -24,12 +24,18 @@
     <ClCompile Include="Source\FBXLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\FBXLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
