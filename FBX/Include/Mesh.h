@@ -9,6 +9,8 @@
 class Mesh
 {
 public:
+	inline std::vector<Material>& GetMaterials() { return _materials; }
+
 	void CreateMesh(const std::vector<float>& vertices, const std::vector<uint16_t>& indices);
 	void DestroyMesh();
 	void Draw();

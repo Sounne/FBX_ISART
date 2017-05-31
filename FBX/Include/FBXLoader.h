@@ -13,6 +13,7 @@
 #pragma comment(lib, "libfbxsdk-md.lib")
 #endif
 
+#include "GL/glew.h"
 #include "Mesh.h"
 
 class FBXLoader
@@ -28,6 +29,7 @@ public:
 
 	void Init();
 
+	GLuint LoadTexture(const char* path, bool linear = false);
 	void ProcessNode(const FbxNode* node, const FbxNode* parent);
 	void LoadMesh(const FbxNode* node);
 	void LoadScene(const char* path);

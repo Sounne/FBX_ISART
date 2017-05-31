@@ -3,13 +3,15 @@
 
 #include <cstdint>
 
+#include "fbxsdk.h"
+
 class Material
 {
 public:
-	float emissive[3]; 
-	float ambient[3]; 
-	float diffuse[3]; 
-	float specular[3]; 
+	FbxDouble3 emissive[3];
+	FbxDouble3 ambient[3];
+	FbxDouble3 diffuse[3];
+	FbxDouble3 specular[3];
 
 	int has_diffuse;
 	int has_specular;

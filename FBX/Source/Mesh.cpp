@@ -10,7 +10,7 @@
 
 void Mesh::CreateMesh(const std::vector<float>& vertices, const std::vector<uint16_t>& indices)
 {
-	_nb_indices = indices.size();
+	_nb_indices = (uint32_t)indices.size();
 
 	glGenVertexArrays(1, &_vao);
 	glBindVertexArray(_vao);
