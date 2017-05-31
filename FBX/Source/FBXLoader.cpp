@@ -180,76 +180,76 @@ void FBXLoader::LoadMesh(const FbxNode * node)
 		}
 	}
 
-	// Transform placant l'objet dans la scene.
-	// Passer par l'Animation Evaluator (global) accumule les transform des parents
+	 //Transform placant l'objet dans la scene.
+	 //Passer par l'Animation Evaluator (global) accumule les transform des parents
 	FbxAMatrix globalTransform =
 		node->GetScene()->GetAnimationEvaluator()->GetNodeGlobalTransform(mutable_node);
 
-	//// Matrice geometrique locale.
-	//FbxVector4 translation = node->GetGeometricTranslation(FbxNode::eSourcePivot);
-	//FbxVector4 rotation = node->GetGeometricRotation(FbxNode::eSourcePivot);
-	//FbxVector4 scale = node->GetGeometricScaling(FbxNode::eSourcePivot);
-	//FbxAMatrix geometryTransform;
-	//geometryTransform.SetTRS(translation, rotation, scale);
+	// Matrice geometrique locale.
+	FbxVector4 translation = node->GetGeometricTranslation(FbxNode::eSourcePivot);
+	FbxVector4 rotation = node->GetGeometricRotation(FbxNode::eSourcePivot);
+	FbxVector4 scale = node->GetGeometricScaling(FbxNode::eSourcePivot);
+	FbxAMatrix geometryTransform;
+	geometryTransform.SetTRS(translation, rotation, scale);
 
-	//FbxAMatrix finalGlobalTransform = globalTransform * geometryTransform;
+	FbxAMatrix finalGlobalTransform = globalTransform * geometryTransform;
 
-	////auto VertexCount = mesh->GetControlPointsCount();
-	//std::vector<float> vertices;
+	//auto VertexCount = mesh->GetControlPointsCount();
+	std::vector<float> vertices;
 
-	//// lecture des indices/elements
-	//auto IndexCount = mesh->GetPolygonVertexCount();
-	//std::vector<uint16_t> indices;
-	////indices.reserve(IndexCount);
+	// lecture des indices/elements
+	auto IndexCount = mesh->GetPolygonVertexCount();
+	std::vector<uint16_t> indices;
+	//indices.reserve(IndexCount);
 
-	//// recupere la liste des canaux UV (texcoords)
-	//FbxStringList UVChannelNames;
-	//mesh->GetUVSetNames(UVChannelNames);
-	//auto UVChannelCount = UVChannelNames.GetCount();
+	// recupere la liste des canaux UV (texcoords)
+	FbxStringList UVChannelNames;
+	mesh->GetUVSetNames(UVChannelNames);
+	auto UVChannelCount = UVChannelNames.GetCount();
 
-	//auto PolyCount = mesh->GetPolygonCount();
-	//// methode 1: duplication des attributs
-	//indices.reserve(PolyCount * 3);
+	auto PolyCount = mesh->GetPolygonCount();
+	// methode 1: duplication des attributs
+	indices.reserve(PolyCount * 3);
 
-	//for (auto poly = 0; poly < PolyCount; poly++) {
-	//	// faces (triangles)
-	//	for (auto i = 0; i < 3; i++) {
-	//		// elements
-	//		auto index = mesh->GetPolygonVertex(poly, i);
+	for (auto poly = 0; poly < PolyCount; poly++) {
+		// faces (triangles)
+		for (auto i = 0; i < 3; i++) {
+			// elements
+			auto index = mesh->GetPolygonVertex(poly, i);
 
-	//		// methode1 - duplication des attributs
-	//		indices.emplace_back((uint16_t)(poly * 3 + i));
+			// methode1 - duplication des attributs
+			indices.emplace_back((uint16_t)(poly * 3 + i));
 
-	//		// attributs: 
-	//		// position (x,y,z)
-	//		FbxVector4 point = mesh->GetControlPointAt(index);
-	//		point = finalGlobalTransform.MultT(point);
-	//		vertices.push_back(point.mData[0]);
-	//		vertices.push_back(point.mData[1]);
-	//		vertices.push_back(point.mData[2]);
-	//		// normal (x,y,z)
-	//		FbxVector4 normal;
-	//		mesh->GetPolygonVertexNormal(poly, i, normal);
-	//		normal = finalGlobalTransform.MultT(normal);
-	//		vertices.push_back(normal.mData[0]);
-	//		vertices.push_back(normal.mData[1]);
-	//		vertices.push_back(normal.mData[2]);
-	//		// tex coords (s,t)
-	//		auto uv_channel = UVChannelNames.GetStringAt(0);
-	//		FbxVector2 texcoords;
-	//		bool isUnMapped = false;
-	//		bool hasUV = mesh->GetPolygonVertexUV(poly, i,
-	//			uv_channel,
-	//			texcoords, isUnMapped);
-	//		vertices.push_back(texcoords.mData[0]);
-	//		vertices.push_back(texcoords.mData[1]);
-	//	}
-	//}
+			// attributs: 
+			// position (x,y,z)
+			FbxVector4 point = mesh->GetControlPointAt(index);
+			point = finalGlobalTransform.MultT(point);
+			vertices.push_back((float)point.mData[0]);
+			vertices.push_back((float)point.mData[1]);
+			vertices.push_back((float)point.mData[2]);
+			// normal (x,y,z)
+			FbxVector4 normal;
+			mesh->GetPolygonVertexNormal(poly, i, normal);
+			normal = finalGlobalTransform.MultT(normal);
+			vertices.push_back((float)normal.mData[0]);
+			vertices.push_back((float)normal.mData[1]);
+			vertices.push_back((float)normal.mData[2]);
+			// tex coords (s,t)
+			auto uv_channel = UVChannelNames.GetStringAt(0);
+			FbxVector2 texcoords;
+			bool isUnMapped = false;
+			bool hasUV = mesh->GetPolygonVertexUV(poly, i,
+				uv_channel,
+				texcoords, isUnMapped);
+			vertices.push_back((float)texcoords.mData[0]);
+			vertices.push_back((float)texcoords.mData[1]);
+		}
+	}
 
-	//Mesh meshObject;
-	//meshObject.GetMaterials().push_back(meshMaterial);
-	//meshObject.CreateMesh(vertices, indices);
-	//_meshes.push_back(meshObject);
+	Mesh meshObject;
+	meshObject.GetMaterials().push_back(meshMaterial);
+	meshObject.CreateMesh(vertices, indices);
+	_meshes.push_back(meshObject);
 }
 
 void FBXLoader::LoadScene(const char * path)
@@ -267,4 +267,10 @@ void FBXLoader::LoadScene(const char * path)
 
 void FBXLoader::Draw()
 {
+}
+
+void FBXLoader::Shutdown()
+{
+	_scene->Destroy();
+	_manager->Destroy();
 }

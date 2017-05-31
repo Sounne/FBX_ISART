@@ -34,6 +34,7 @@ public:
 	void LoadMesh(const FbxNode* node);
 	void LoadScene(const char* path);
 	void Draw();
+	void Shutdown();
 
 private:
 	void ConvertAxisSystem();

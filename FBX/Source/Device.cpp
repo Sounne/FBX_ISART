@@ -4,9 +4,10 @@
 Device::Device()
 {
 	_window = std::make_unique<sf::Window>();
+	_driver = std::make_unique<Driver>();
 	_fbxloader = std::make_unique<FBXLoader>();
 	_basic_program = std::make_unique<GLShader>();
-	CreateWindow(800, 600, "FBX Loader");
+	CreateSFMLWindow(800, 600, "FBX Loader");
 	_fbxloader->Init();
 }
 
@@ -26,7 +27,7 @@ void Device::Init()
 	_fbxloader->Init();
 }
 
-void Device::CreateWindow(uint16_t size_x, uint16_t size_y, const sf::String & title)
+void Device::CreateSFMLWindow(uint16_t size_x, uint16_t size_y, const sf::String & title)
 {
 	_window->create(sf::VideoMode(size_x, size_y), title, sf::Style::Default);
 	_running = true;
@@ -50,7 +51,21 @@ void Device::Run()
 
 		_window->setActive();
 
-		if (_window.get())
+		if (_driver)
+		{
+			_driver->Clear();
+		}
+
+		if (_fbxloader)
+		{
+			_fbxloader->Draw();
+		}
+
+		if (_window)
 			_window->display();
 	}
+}
+
+void Device::Shutdown()
+{
 }
