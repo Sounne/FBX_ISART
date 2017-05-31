@@ -75,9 +75,10 @@ void GLShader::Destroy()
 
 uint32_t GLShader::CheckShaderType(uint32_t type)
 {
-	uint32_t shader_id;
-	shader_id = glCreateShader(type);
-	switch (type) {
+	uint32_t shader_id = glCreateShader(type);
+
+	switch (type) 
+	{
 	case GL_VERTEX_SHADER:
 		_vertex_shader = shader_id;
 		break;

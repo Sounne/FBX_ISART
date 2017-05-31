@@ -5,6 +5,7 @@
 int main(int* ac, char** av)
 {
 	Device* device = new Device();
+	device->Init();
 
 	delete device;
 

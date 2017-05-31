@@ -19,6 +19,7 @@ public:
 	inline void Bind() { glUseProgram(_program); }
 	inline void Unbind() { glUseProgram(0); }
 	inline uint32_t GetProgram() { return _program; }
+	inline void SetLinkCallback(void(*func)(int)) { LinkCallback = func; }
 
 	void LoadShader(uint32_t type, const char* path);
 	void Create();
