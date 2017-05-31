@@ -1,6 +1,13 @@
 #include "Mesh.h"
 #include "GL/glew.h"
 
+#if _WIN32
+#define FREEGLUT_LIB_PRAGMAS	1
+#pragma comment (lib, "freeglut.lib")
+#pragma comment (lib, "glew32.lib")
+#pragma comment (lib, "opengl32.lib")
+#endif
+
 void Mesh::CreateMesh(const std::vector<float>& vertices, const std::vector<uint16_t>& indices)
 {
 	_nb_indices = indices.size();
@@ -34,8 +41,27 @@ void Mesh::CreateMesh(const std::vector<float>& vertices, const std::vector<uint
 
 void Mesh::DestroyMesh()
 {
+	glDeleteVertexArrays(1, &_vao);
+	glDeleteBuffers(1, &_vbo);
+	glDeleteBuffers(1, &_ibo);
+
+	std::vector<Material>::iterator first = _materials.begin();
+	std::vector<Material>::iterator last = _materials.end();
+	uint16_t i = 0;
+
+	for (; first != last; ++first)
+	{
+		if (_materials[i]._diffuse_tex)
+			glDeleteTextures(1, &_materials[i]._diffuse_tex);
+		if (_materials[i]._normal_tex)
+			glDeleteTextures(1, &_materials[i]._normal_tex);
+		if (_materials[i]._specular_tex)
+			glDeleteTextures(1, &_materials[i]._specular_tex);
+	}
 }
 
 void Mesh::Draw()
 {
+	glBindVertexArray(_vao);
+	glDrawElements(GL_TRIANGLES, _nb_indices, GL_UNSIGNED_SHORT, nullptr);
 }

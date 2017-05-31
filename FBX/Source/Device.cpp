@@ -3,7 +3,7 @@
 Device::Device()
 {
 	_running = false;
-	CreateWindow(866, 600, "FBX Loader");
+	CreateWindow(800, 600, "FBX Loader");
 }
 
 Device::~Device()
