@@ -27,14 +27,16 @@ public:
 	FBXLoader operator=(FBXLoader const&) = delete;
 
 	void Init();
-	void ConvertAxisSystem();
-	void UseCentimeter();
+
 	void ProcessNode(const FbxNode* node, const FbxNode* parent);
 	void LoadMesh(const FbxNode* node);
 	void LoadScene(const char* path);
 	void Draw();
 
 private:
+	void ConvertAxisSystem();
+	void UseCentimeter();
+
 	FbxManager* _manager;
 	FbxScene* _scene;
 
