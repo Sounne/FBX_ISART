@@ -68,6 +68,7 @@ GLuint FBXLoader::LoadTexture(const char * path, bool linear)
 void FBXLoader::ProcessNode(const FbxNode * node, const FbxNode * parent)
 {
 	const FbxNodeAttribute* attribute = node->GetNodeAttribute();
+
 	if (attribute) {
 		FbxNodeAttribute::EType type;
 		type = attribute->GetAttributeType();
@@ -161,31 +162,27 @@ void FBXLoader::LoadMesh(const FbxNode * node)
 		meshMaterial.specular[2] = color[2];
 	}
 
-	const FbxProperty bump_property =
-		material->FindProperty(FbxSurfaceMaterial::sBump);
-	if (bump_property.IsValid()) {
-		const FbxProperty factorBump =
-			material->FindProperty(FbxSurfaceMaterial::sBumpFactor);
-		if (factorBump.IsValid()) {
-			double factor = factorBump.Get<double>();
-			// TODO: stocker ce facteur de scale du bump
-		}
+	//const FbxProperty bump_property =
+	//	material->FindProperty(FbxSurfaceMaterial::sBump);
+	//if (bump_property.IsValid()) {
+	//	const FbxProperty factorBump =
+	//		material->FindProperty(FbxSurfaceMaterial::sBumpFactor);
+	//	if (factorBump.IsValid()) {
+	//		double factor = factorBump.Get<double>();
+	//	}
 
-		int textureCount = bump_property.GetSrcObjectCount<FbxFileTexture>();
-		FbxFileTexture* texture = bump_property.GetSrcObject<FbxFileTexture>(0);
-		if (texture) {
-			const char* filename = texture->GetFileName();
-			meshMaterial._normal_tex = LoadTexture(filename);
-			meshMaterial.has_normal = true;
-		}
-	}
+	//	int textureCount = bump_property.GetSrcObjectCount<FbxFileTexture>();
+	//	FbxFileTexture* texture = bump_property.GetSrcObject<FbxFileTexture>(0);
+	//	if (texture) {
+	//		const char* filename = texture->GetFileName();
+	//		meshMaterial._normal_tex = LoadTexture(filename);
+	//		meshMaterial.has_normal = true;
+	//	}
+	//}
 
-	 //Transform placant l'objet dans la scene.
-	 //Passer par l'Animation Evaluator (global) accumule les transform des parents
 	FbxAMatrix globalTransform =
 		node->GetScene()->GetAnimationEvaluator()->GetNodeGlobalTransform(mutable_node);
 
-	// Matrice geometrique locale.
 	FbxVector4 translation = node->GetGeometricTranslation(FbxNode::eSourcePivot);
 	FbxVector4 rotation = node->GetGeometricRotation(FbxNode::eSourcePivot);
 	FbxVector4 scale = node->GetGeometricScaling(FbxNode::eSourcePivot);
@@ -194,47 +191,37 @@ void FBXLoader::LoadMesh(const FbxNode * node)
 
 	FbxAMatrix finalGlobalTransform = globalTransform * geometryTransform;
 
-	//auto VertexCount = mesh->GetControlPointsCount();
 	std::vector<float> vertices;
 
-	// lecture des indices/elements
 	auto IndexCount = mesh->GetPolygonVertexCount();
 	std::vector<uint16_t> indices;
-	//indices.reserve(IndexCount);
 
-	// recupere la liste des canaux UV (texcoords)
 	FbxStringList UVChannelNames;
 	mesh->GetUVSetNames(UVChannelNames);
 	auto UVChannelCount = UVChannelNames.GetCount();
 
 	auto PolyCount = mesh->GetPolygonCount();
-	// methode 1: duplication des attributs
 	indices.reserve(PolyCount * 3);
 
 	for (auto poly = 0; poly < PolyCount; poly++) {
-		// faces (triangles)
 		for (auto i = 0; i < 3; i++) {
-			// elements
 			auto index = mesh->GetPolygonVertex(poly, i);
 
-			// methode1 - duplication des attributs
 			indices.emplace_back((uint16_t)(poly * 3 + i));
 
-			// attributs: 
-			// position (x,y,z)
 			FbxVector4 point = mesh->GetControlPointAt(index);
 			point = finalGlobalTransform.MultT(point);
 			vertices.push_back((float)point.mData[0]);
 			vertices.push_back((float)point.mData[1]);
 			vertices.push_back((float)point.mData[2]);
-			// normal (x,y,z)
+
 			FbxVector4 normal;
 			mesh->GetPolygonVertexNormal(poly, i, normal);
 			normal = finalGlobalTransform.MultT(normal);
 			vertices.push_back((float)normal.mData[0]);
 			vertices.push_back((float)normal.mData[1]);
 			vertices.push_back((float)normal.mData[2]);
-			// tex coords (s,t)
+
 			auto uv_channel = UVChannelNames.GetStringAt(0);
 			FbxVector2 texcoords;
 			bool isUnMapped = false;
@@ -276,26 +263,31 @@ void FBXLoader::LoadScene(const char * path)
 	}
 
 	ProcessNode(root, nullptr);
-
 }
 
 void FBXLoader::Render()
 {
 	glEnable(GL_DEPTH_TEST);
 
-	glClearColor(0.f, 1.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	_program->Bind();
 	uint32_t program_id = _program->GetProgram();
 
 	for (auto& mesh : _meshes)
 	{
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, mesh.GetMaterials()[0]._normal_tex);
+		//mesh.Draw();
+
+		glUniform1i(glGetUniformLocation(program_id, "u_DiffuseTexture"), 0);
 		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mesh.GetMaterials()[0]._diffuse_tex);
+		glUniform1i(glGetUniformLocation(program_id, "u_SpecularTexture"), 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, mesh.GetMaterials()[0]._specular_tex);
+		glActiveTexture(GL_TEXTURE2);
+		glUniform1i(glGetUniformLocation(program_id, "u_NormalTexture"), 2);
 		glBindTexture(GL_TEXTURE_2D, mesh.GetMaterials()[0]._normal_tex);
 		mesh.Draw();
-
-		std::cout << "TAMERE LE MESH" << std::endl;
 	}
 
 	glBindVertexArray(0);

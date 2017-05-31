@@ -16,7 +16,7 @@ public:
 
 	void Init();
 	void CreateSFMLWindow(uint16_t size_x, uint16_t size_y, const sf::String& title);
-	void CloseWindow();
+	void CloseSFMLWindow();
 	void Run();
 	void Shutdown();
 

@@ -16,7 +16,7 @@ Device::Device()
 
 Device::~Device()
 {
-	CloseWindow();
+	CloseSFMLWindow();
 }
 
 void Device::Init()
@@ -37,7 +37,7 @@ void Device::CreateSFMLWindow(uint16_t size_x, uint16_t size_y, const sf::String
 	_running = true;
 }
 
-void Device::CloseWindow()
+void Device::CloseSFMLWindow()
 {
 	_window->close();
 }
@@ -58,6 +58,7 @@ void Device::Run()
 		if (_driver)
 		{
 			_driver->Clear();
+			//_driver->Render();
 		}
 
 		if (_fbxloader)

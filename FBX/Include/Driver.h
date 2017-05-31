@@ -8,6 +8,7 @@ public:
 	~Driver();
 
 	void Clear();
+	void Render();
 };
 
 #endif // !__DRIVER_H_INCLUDED__

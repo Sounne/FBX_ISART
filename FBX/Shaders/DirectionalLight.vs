@@ -3,12 +3,14 @@
 layout(location = 0) in vec4 a_Position;
 layout(location = 1) in vec3 a_Normal;
 layout(location = 2) in vec2 a_TexCoords;
+layout(location = 3) in vec3 a_Tangent;
 
 uniform float u_Time;
 
 out FragmentData
 {
 	vec3 v_Normal;		// en local space
+	vec3 v_Tangent;		// en local space
 	vec2 v_TexCoords;
 	flat vec3 v_I;		// en local space
 	vec3 v_V;			// en local space
@@ -21,6 +23,7 @@ const vec3 c_CameraPosition = vec3(0.0,0.0,10.0);
 void main(void)
 {	
 	OUT.v_Normal = a_Normal;
+	OUT.v_Tangent = a_Tangent;
 	OUT.v_TexCoords = a_TexCoords;
 
 
@@ -39,7 +42,7 @@ void main(void)
 						0.0, -2.0, -10.0, 1.0
 				);				
 
-	mat4 worldMatrix = translationMatrix * rotationMatrix;
+	mat4 worldMatrix = translationMatrix;// * rotationMatrix;
 	
 	// Projection perspective
 	float width = 1280.0; float height = 720.0;
