@@ -261,12 +261,44 @@ void FBXLoader::LoadScene(const char * path)
 	status = importer->Import(_scene);
 	importer->Destroy();
 
-	ConvertAxisSystem();
-	UseCentimeter();
+	FbxNode* root = _scene->GetRootNode();
+	FbxAxisSystem SceneAxisSystem = _scene->GetGlobalSettings().GetAxisSystem();
+	FbxAxisSystem OurAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd,
+		FbxAxisSystem::eRightHanded);
+	if (SceneAxisSystem != OurAxisSystem) 
+		OurAxisSystem.ConvertScene(_scene);
+
+	FbxSystemUnit SceneSystemUnit = _scene->GetGlobalSettings().GetSystemUnit();
+	if (fabs(SceneSystemUnit.GetScaleFactor() - 1.0) > 0.00001) 
+	{
+		FbxSystemUnit OurSystemUnit(1.0);
+		OurSystemUnit.ConvertScene(_scene);
+	}
+
+	ProcessNode(root, nullptr);
+
 }
 
-void FBXLoader::Draw()
+void FBXLoader::Render()
 {
+	glEnable(GL_DEPTH_TEST);
+
+	glClearColor(0.f, 1.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	_program->Bind();
+	uint32_t program_id = _program->GetProgram();
+
+	for (auto& mesh : _meshes)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mesh.GetMaterials()[0]._normal_tex);
+		mesh.Draw();
+
+		std::cout << "TAMERE LE MESH" << std::endl;
+	}
+
+	glBindVertexArray(0);
 }
 
 void FBXLoader::Shutdown()

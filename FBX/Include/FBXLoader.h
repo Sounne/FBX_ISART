@@ -15,6 +15,7 @@
 
 #include "GL/glew.h"
 #include "Mesh.h"
+#include "GLShader.h"
 
 class FBXLoader
 {
@@ -27,13 +28,14 @@ public:
 	FBXLoader operator=(FBXLoader&&) = delete;
 	FBXLoader operator=(FBXLoader const&) = delete;
 
-	void Init();
+	inline void SetProgram(GLShader* new_program) { _program = new_program; }
 
 	GLuint LoadTexture(const char* path, bool linear = false);
+	void Init();
 	void ProcessNode(const FbxNode* node, const FbxNode* parent);
 	void LoadMesh(const FbxNode* node);
 	void LoadScene(const char* path);
-	void Draw();
+	void Render();
 	void Shutdown();
 
 private:
@@ -42,6 +44,7 @@ private:
 
 	FbxManager* _manager;
 	FbxScene* _scene;
+	GLShader* _program;
 
 	std::vector<Mesh> _meshes;
 };

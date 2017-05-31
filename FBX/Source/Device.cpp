@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Device.h"
 #include "GL/glew.h"
 
@@ -5,8 +7,9 @@ Device::Device()
 {
 	_window = std::make_unique<sf::Window>();
 	_driver = std::make_unique<Driver>();
-	_fbxloader = std::make_unique<FBXLoader>();
 	_basic_program = std::make_unique<GLShader>();
+	_fbxloader = std::make_unique<FBXLoader>();
+	_fbxloader->SetProgram(_basic_program.get());
 	CreateSFMLWindow(800, 600, "FBX Loader");
 	_fbxloader->Init();
 }
@@ -25,6 +28,7 @@ void Device::Init()
 	_basic_program->Create();
 
 	_fbxloader->Init();
+	_fbxloader->LoadScene("data/ironman/ironman.fbx");
 }
 
 void Device::CreateSFMLWindow(uint16_t size_x, uint16_t size_y, const sf::String & title)
@@ -58,7 +62,7 @@ void Device::Run()
 
 		if (_fbxloader)
 		{
-			_fbxloader->Draw();
+			_fbxloader->Render();
 		}
 
 		if (_window)
