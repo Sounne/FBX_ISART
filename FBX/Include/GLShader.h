@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#include "GL/glew.h"
+
 class GLShader
 {
 public:
@@ -14,14 +16,16 @@ public:
 	GLShader operator=(GLShader const&) = delete;
 	GLShader operator=(GLShader &&) = delete;
 
-	void LoadShader(uint32_t type, const char* path);
-	void Create();
-	void Bind();
-	void Unbind();
-
+	inline void Bind() { glUseProgram(_program); }
+	inline void Unbind() { glUseProgram(0); }
 	inline uint32_t GetProgram() { return _program; }
 
+	void LoadShader(uint32_t type, const char* path);
+	void Create();
+	void Destroy();
+
 private:
+	void(*LinkCallback)(int);
 	uint32_t CheckShaderType(uint32_t type);
 
 	uint32_t _program;

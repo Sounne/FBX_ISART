@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include "GLShader.h"
-#include "GL/glew.h"
 
 void GLShader::LoadShader(uint32_t type, const char * path)
 {
@@ -43,14 +42,35 @@ void GLShader::LoadShader(uint32_t type, const char * path)
 
 void GLShader::Create()
 {
+	_program = glCreateProgram();
+	glAttachShader(_program, _vertex_shader);
+	glAttachShader(_program, _geometry_shader);
+	glAttachShader(_program, _fragment_shader);
+	glAttachShader(_program, _compute_shader);
+
+	if (LinkCallback != nullptr)
+		LinkCallback(_program);
+
+	glLinkProgram(_program);
+	int linkSuccess = 0;
+	glGetProgramiv(_program, GL_LINK_STATUS, &linkSuccess);
+	if (!linkSuccess)
+	{
+		char errorBuffer[4096];
+		int error_len;
+		glGetProgramInfoLog(_program, 4096, &error_len,
+			errorBuffer);
+		std::cout << "[LING ERROR] : " << errorBuffer << std::endl;
+	}
 }
 
-void GLShader::Bind()
+void GLShader::Destroy()
 {
-}
-
-void GLShader::Unbind()
-{
+	glDeleteShader(_compute_shader);
+	glDeleteShader(_vertex_shader);
+	glDeleteShader(_geometry_shader);
+	glDeleteShader(_fragment_shader);
+	glDeleteProgram(_program);
 }
 
 uint32_t GLShader::CheckShaderType(uint32_t type)
