@@ -22,7 +22,7 @@ public:
 	inline uint32_t GetProgram() { return _program; }
 
 private:
-	void CheckShaderType(uint32_t type);
+	uint32_t CheckShaderType(uint32_t type);
 
 	uint32_t _program;
 	uint32_t _vertex_shader;
