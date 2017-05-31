@@ -1,9 +1,14 @@
 #include "Device.h"
+#include "GL/glew.h"
 
 Device::Device()
 {
-	_running = false;
+	_window = std::make_unique<sf::Window>();
+	_fbxloader = std::make_unique<FBXLoader>();
+
 	CreateWindow(800, 600, "FBX Loader");
+
+	_fbxloader->Init();
 }
 
 Device::~Device()
@@ -11,9 +16,19 @@ Device::~Device()
 	CloseWindow();
 }
 
+void Device::Init()
+{
+	glewInit();
+	glEnable(GL_FRAMEBUFFER_SRGB);
+	_basic_program->LoadShader(GL_VERTEX_SHADER, "DirectionalLight.vs");
+	_basic_program->LoadShader(GL_VERTEX_SHADER, "DirectionalLight.fs");
+	_basic_program->Create();
+	_fbxloader->Init();
+	_fbxloader->LoadScene("data/ironman/ironman.fbx");
+}
+
 void Device::CreateWindow(uint16_t size_x, uint16_t size_y, const sf::String & title)
 {
-	_window = std::make_unique<sf::Window>();
 	_window->create(sf::VideoMode(size_x, size_y), title, sf::Style::Default);
 	_running = true;
 }

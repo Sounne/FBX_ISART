@@ -14,6 +14,8 @@ void FBXLoader::Init()
 
 	FbxIOSettings* settings = FbxIOSettings::Create(_manager, IOSROOT);
 	_manager->SetIOSettings(settings);
+
+
 }
 
 void FBXLoader::ConvertAxisSystem()
